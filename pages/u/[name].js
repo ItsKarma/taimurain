@@ -6,16 +6,30 @@ import { useRef } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FaRegMinusSquare, FaRegPlusSquare, FaBed } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+import { Snackbar, Alert } from "@mui/material";
 import NoSsr from "../../components/NoSsr";
 import UserCard from "../../components/userCard";
 import Posts from "../../components/posts";
 import CreatePost from "../../components/createPost";
+import { Container, Box, Grid } from "@mui/material";
 
 export default function Page() {
   const router = useRouter();
   const [userData, setUserData] = useState({});
   const [userName, setUserName] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showToast = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   async function getPosts() {
     try {
@@ -27,8 +41,10 @@ export default function Page() {
       }
       const data = await response.json();
       setPostData(data);
+      showToast("Posts fetched successfully!");
     } catch (error) {
       console.error("Error:", error);
+      showToast("Failed to fetch posts", "error");
     }
   }
 
@@ -47,8 +63,10 @@ export default function Page() {
       const data = await response.json();
       setUserData(data);
       console.log("userData", data);
+      showToast("User data fetched successfully!");
     } catch (error) {
       console.error("Error:", error);
+      showToast("Failed to fetch user data", "error");
     }
   }
 
@@ -69,29 +87,41 @@ export default function Page() {
   }, [router.query.name]);
 
   return (
-    <div>
+    <Container>
       <Head>
-        <title>Circles</title>
+        <title>Taimurain</title>
         <link rel="icon" href="/favicon.ico" />
-        {/* to prevent Firefox FOUC, this must be here */}
         <Script>0</Script>
       </Head>
       <main>
-        {/* Toaster - Keep at top */}
-        <NoSsr>
-          <Toaster position="top-right" />
-        </NoSsr>
-        <section className="flex mx-4 my-4">
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+        <Box sx={{ display: "flex", margin: 2 }}>
           <UserCard userName={userName} />
-          <div className="flex flex-col flex-grow mx-4">
-            <CreatePost userId={userData.id} getPosts={getPosts} />
-            <Posts userName={userName} />
-          </div>
+          <Grid container spacing={2} sx={{ flexGrow: 1, marginX: 2 }}>
+            <Grid item xs={12}>
+              <CreatePost userId={userData.id} getPosts={getPosts} />
+            </Grid>
+            <Grid item xs={12}>
+              <Posts userName={userName} />
+            </Grid>
+          </Grid>
           <UserCard userName={userName} />
-        </section>
+        </Box>
       </main>
       <Analytics />
       <SpeedInsights />
-    </div>
+    </Container>
   );
 }

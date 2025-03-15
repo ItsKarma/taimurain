@@ -1,5 +1,5 @@
-import "../styles/global.css";
 import { SWRConfig } from "swr";
+import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 
 const localStorageProvider = () => {
   const isBrowser = typeof window !== "undefined";
@@ -24,10 +24,21 @@ const localStorageProvider = () => {
   return map;
 };
 
+const theme = createTheme({
+  palette: {
+    background: {
+      default: "#071e34", // Set your desired background color
+    },
+  },
+});
+
 export default function App({ Component, pageProps }) {
   return (
-    <SWRConfig value={{ provider: localStorageProvider }}>
-      <Component {...pageProps} />
-    </SWRConfig>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <SWRConfig value={{ provider: localStorageProvider }}>
+        <Component {...pageProps} />
+      </SWRConfig>
+    </ThemeProvider>
   );
 }
