@@ -68,7 +68,6 @@ export default function Home() {
         </Snackbar>
         <Box
           sx={{
-            backgroundColor: "#071e34",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

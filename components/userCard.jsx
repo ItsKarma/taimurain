@@ -1,53 +1,82 @@
-import getUsers from "./useUsers";
+import {
+  Card,
+  CardContent,
+  Avatar,
+  Typography,
+  Box,
+  Tooltip,
+} from "@mui/material";
 
-export default function UserCard({ userName }) {
-  const { userData, isLoading, isValidating, isError } = getUsers(userName);
-
+export default function UserCard({ userData }) {
   return (
-    <section className="w-64 bg-[#20354b] rounded-2xl px-6 py-6 shadow-lg">
-      <div className="w-fit mx-auto">
-        <img
-          src="https://cdn.vectorstock.com/i/500p/08/19/gray-photo-placeholder-icon-design-ui-vector-35850819.jpg"
-          className="rounded-xl"
-          alt="profile picture"
-          srcSet=""
-        />
-      </div>
+    <Card
+      sx={{
+        width: 256,
+        backgroundColor: "#20354b",
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        <Box display="flex" justifyContent="center" mb={4}>
+          <Avatar
+            src={
+              userData.avatar_url ||
+              "https://cdn.vectorstock.com/i/500p/08/19/gray-photo-placeholder-icon-design-ui-vector-35850819.jpg"
+            }
+            sx={{
+              width: 96,
+              height: 96,
+              border: "2px solid rgba(255, 255, 255, 0.1)",
+            }}
+          />
+        </Box>
 
-      <div className="mt-8">
-        {isLoading || !userData ? (
-          <div className="w-1/6 bg-gray-500 h-3 rounded-md"></div>
-        ) : (
-          <h2 className="text-white font-bold text-2xl tracking-wide">
-            {userData.displayName}
-          </h2>
-        )}
-      </div>
+        <Tooltip title={userData.display_name} placement="top">
+          <Typography
+            variant="body1"
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+              mb: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            @{userData.display_name}
+          </Typography>
+        </Tooltip>
 
-      {isLoading || !userData ? (
-        <div className="w-1/6 bg-gray-500 h-3 rounded-md"></div>
-      ) : (
-        <h2 className="text-gray-400 text-sm tracking-wide">
-          @{userData.userName}
-        </h2>
-      )}
-      {isLoading || !userData ? (
-        <div className="w-1/6 bg-gray-500 h-3 rounded-md"></div>
-      ) : (
-        <p className="text-emerald-400 font-semibold mt-2.5">
-          {userData.status}
-        </p>
-      )}
+        <Typography
+          variant="body2"
+          sx={{
+            color: "success.main",
+            textAlign: "center",
+            fontWeight: "semibold",
+            mb: 2,
+          }}
+        >
+          {userData.status || "Active"}
+        </Typography>
 
-      <div className="mt-3 text-white text-sm">
-        {isLoading || !userData ? (
-          <div className="w-1/6 bg-gray-500 h-3 rounded-md"></div>
-        ) : (
-          <span className="text-gray-200 font-semibold">
-            {userData.description}
-          </span>
-        )}
-      </div>
-    </section>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            textAlign: "center",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            maxHeight: "4.5em",
+          }}
+        >
+          {userData.description || "No description yet"}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }
