@@ -4,10 +4,10 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "GET") {
-    console.log(`GET /api/posts/${id}`);
+    console.log(`GET /api/events/${id}`);
     try {
       const { data, error } = await supabase
-        .from("posts")
+        .from("events")
         .select(
           `
         *,
@@ -22,14 +22,14 @@ export default async function handler(req, res) {
       console.debug("data", data);
       res.status(200).json(data);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.status(500).json({ error: "Failed to fetch posts" });
+      console.error("Error fetching events:", error);
+      res.status(500).json({ error: "Failed to fetch events" });
     }
   } else if (req.method === "DELETE") {
-    console.log(`DELETE /api/posts/${id}`);
+    console.log(`DELETE /api/events/${id}`);
     try {
       const { data, error } = await supabase
-        .from("posts")
+        .from("events")
         .delete()
         .eq("id", id);
       if (error) {
@@ -38,8 +38,8 @@ export default async function handler(req, res) {
       console.debug("data", data);
       res.status(200).json(data);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.status(500).json({ error: "Failed to delete post" });
+      console.error("Error deleting event:", error);
+      res.status(500).json({ error: "Failed to delete event" });
     }
   } else {
     res.status(405).json({ error: "Method not allowed" });

@@ -11,15 +11,15 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import NoSsr from "../../components/NoSsr";
 import UserCard from "../../components/userCard";
-import Posts from "../../components/posts";
-import CreatePost from "../../components/createPost";
+import Events from "../../components/events";
+import CreateEvent from "../../components/createEvent";
 import supabase from "../api/db";
 
 // Main page component
 export default function Page() {
   const router = useRouter();
   const [userData, setUserData] = useState({});
-  const [posts, setPosts] = useState([]);
+  const [events, setEvents] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -36,21 +36,21 @@ export default function Page() {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  // Function to fetch posts from the API
-  async function getPosts() {
+  // Function to fetch events from the API
+  async function getEvents() {
     try {
-      const response = await fetch("/api/posts", {
+      const response = await fetch("/api/events", {
         method: "GET",
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setPosts(data);
-      showToast("Posts fetched successfully!");
+      setEvents(data);
+      showToast("Events fetched successfully!");
     } catch (error) {
       console.error("Error:", error);
-      showToast("Failed to fetch posts", "error");
+      showToast("Failed to fetch events", "error");
     }
   }
 
@@ -94,7 +94,7 @@ export default function Page() {
   }, []);
 
   return (
-    <Container>
+    <Container maxWidth={false} disableGutters>
       {/* Head section for metadata */}
       <Head>
         <title>Taimurain</title>
@@ -117,17 +117,47 @@ export default function Page() {
           </Alert>
         </Snackbar>
         {/* Main content layout */}
-        <Box sx={{ display: "flex", margin: 2 }}>
-          <UserCard userData={userData} /> {/* User card component */}
-          <Grid container spacing={2} sx={{ flexGrow: 1, marginX: 2 }}>
-            <Grid>
-              <CreatePost userId={userData.id} getPosts={getPosts} />{" "}
-              {/* Create post component */}
-            </Grid>
-            <Grid>
-              <Posts posts={posts} /> {/* Posts component */}
-            </Grid>
-          </Grid>
+        <Box
+          sx={{
+            display: "flex",
+            minHeight: "100vh",
+            backgroundColor: "transparent",
+            gap: 2,
+            padding: 2,
+          }}
+        >
+          {/* Left column - UserCard */}
+          <Box
+            sx={{
+              position: "sticky",
+              top: 0,
+              height: "100vh",
+              padding: 1,
+            }}
+          >
+            <UserCard userData={userData} />
+          </Box>
+
+          {/* Center column - Events */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              padding: 1,
+              maxWidth: "calc(100% - 800px)", // Account for side columns
+            }}
+          >
+            <Events events={events} />
+          </Box>
+
+          {/* Right column - CreateEvent */}
+          <Box
+            sx={{
+              width: 400,
+              padding: 1,
+            }}
+          >
+            <CreateEvent userId={userData.id} getEvents={getEvents} />
+          </Box>
         </Box>
       </main>
       {/* Analytics and performance insights */}

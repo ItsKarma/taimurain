@@ -6,8 +6,51 @@ import {
   Box,
   Tooltip,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import supabase from "../pages/api/db";
 
 export default function UserCard({ userData }) {
+  const [sessionStatus, setSessionStatus] = useState("Checking...");
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) throw error;
+
+        if (session) {
+          setSessionStatus("Online");
+        } else {
+          setSessionStatus("Offline");
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setSessionStatus("Error");
+      }
+    };
+
+    checkSession();
+
+    // Subscribe to auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSessionStatus(session ? "Online" : "Offline");
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (!userData) {
+    return null;
+  }
+
   return (
     <Card
       sx={{
@@ -52,13 +95,14 @@ export default function UserCard({ userData }) {
         <Typography
           variant="body2"
           sx={{
-            color: "success.main",
+            color:
+              sessionStatus === "Online" ? "success.main" : "text.secondary",
             textAlign: "center",
             fontWeight: "semibold",
             mb: 2,
           }}
         >
-          {userData.status || "Active"}
+          {sessionStatus}
         </Typography>
 
         <Typography

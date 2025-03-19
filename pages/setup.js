@@ -89,7 +89,7 @@ export default function Setup() {
   const [formData, setFormData] = useState({
     displayName: "",
     language: "en",
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timezone: "UTC",
   });
   const [validation, setValidation] = useState({
     isValid: false,
@@ -100,6 +100,14 @@ export default function Setup() {
     message: "",
     severity: "success",
   });
+
+  useEffect(() => {
+    // Update timezone on client side only
+    setFormData((prev) => ({
+      ...prev,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }));
+  }, []);
 
   useEffect(() => {
     const getUser = async () => {
